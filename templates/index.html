@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Notes AutoComplete</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            text-align: center;
+        }
+        #editor {
+            width: 80%;
+            height: 200px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        #suggestions {
+            width: 80%;
+            text-align: left;
+            margin: 10px auto;
+            position: relative;
+        }
+        .suggestion {
+            display: block;
+            padding: 5px;
+            cursor: pointer;
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+        }
+        .suggestion:hover {
+            background: #ddd;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Medical Notes AutoComplete</h2>
+    <textarea id="editor" placeholder="Start typing..." onkeyup="getSuggestions()"></textarea>
+    <div id="suggestions"></div>
+
+    <script>
+        function getSuggestions() {
+            let text = document.getElementById("editor").value.trim();
+            if (text === "") {
+                document.getElementById("suggestions").innerHTML = "";
+                return;
+            }
+
+            $.ajax({
+                url: "/predict",
+                type: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ text: text }),
+                success: function(response) {
+                    let suggestions = response.suggestions;
+                    let suggestionsHTML = "";
+
+                    suggestions.forEach(suggestion => {
+                        suggestionsHTML += `<div class="suggestion" onclick="insertText('${suggestion}')">${suggestion}</div>`;
+                    });
+
+                    document.getElementById("suggestions").innerHTML = suggestionsHTML;
+                }
+            });
+        }
+
+        function insertText(suggestion) {
+            let editor = document.getElementById("editor");
+            editor.value += " " + suggestion;
+            document.getElementById("suggestions").innerHTML = "";
+        }
+    </script>
+
+</body>
+</html>
