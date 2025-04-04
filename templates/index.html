@@ -11,6 +11,7 @@
             padding: 20px;
             text-align: center;
         }
+
         #editor {
             width: 80%;
             height: 200px;
@@ -18,35 +19,57 @@
             font-size: 16px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            margin-bottom: 10px;
         }
+
+        #speciality {
+            padding: 10px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
         #suggestions {
             width: 80%;
             text-align: left;
-            margin: 10px auto;
+            margin: 0 auto;
             position: relative;
         }
+
         .suggestion {
             display: block;
-            padding: 5px;
+            padding: 8px;
             cursor: pointer;
             background: #f8f8f8;
             border: 1px solid #ddd;
+            margin-top: -1px;
         }
+
         .suggestion:hover {
-            background: #ddd;
+            background: #e0e0e0;
         }
     </style>
 </head>
 <body>
 
     <h2>Medical Notes AutoComplete</h2>
+
+    <label for="speciality"><strong>Select Speciality:</strong></label><br>
+    <select id="speciality">
+        {% for s in specialities %}
+            <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+    </select><br><br>
+
     <textarea id="editor" placeholder="Start typing..." onkeyup="getSuggestions()"></textarea>
+
     <div id="suggestions"></div>
 
     <script>
         function getSuggestions() {
-            let text = document.getElementById("editor").value.trim();
-            if (text === "") {
+            const text = document.getElementById("editor").value.trim();
+            const speciality = document.getElementById("speciality").value;
+
+            if (!text || !speciality) {
                 document.getElementById("suggestions").innerHTML = "";
                 return;
             }
@@ -55,7 +78,7 @@
                 url: "/predict",
                 type: "POST",
                 contentType: "application/json",
-                data: JSON.stringify({ text: text }),
+                data: JSON.stringify({ text: text, speciality: speciality }),
                 success: function(response) {
                     let suggestions = response.suggestions;
                     let suggestionsHTML = "";
@@ -71,7 +94,8 @@
 
         function insertText(suggestion) {
             let editor = document.getElementById("editor");
-            editor.value += " " + suggestion;
+            editor.value += (editor.value.endsWith(" ") ? "" : " ") + suggestion + " ";
+            editor.focus();
             document.getElementById("suggestions").innerHTML = "";
         }
     </script>
