@@ -4,8 +4,8 @@ import pickle
 import os
 import nltk
 
-project_root = os.path.dirname(os.path.abspath(__file__))
-nltk_path = os.path.join(project_root, "nltk_data")
+nltk_path = os.path.join(os.path.dirname(__file__), 'nltk_data')
+print("Using NLTK path:", nltk_path)
 nltk.data.path.append(nltk_path)
 
 app = Flask(__name__, template_folder="templates")
