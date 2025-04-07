@@ -2,7 +2,7 @@
 
 from collections import defaultdict
 from nltk.util import ngrams
-from nltk.tokenize import word_tokenize
+from nltk.tokenize import WordPunctTokenizer
 import os
 import nltk
 
@@ -12,6 +12,10 @@ nltk.data.path.append(nltk_path)
 
 
 
+tokenizer = WordPunctTokenizer()
+
+def word_tokenize_safe(text):
+    return tokenizer.tokenize(text)
 
 class NGramModel:
     def __init__(self, n=2):
@@ -28,7 +32,7 @@ class NGramModel:
         for _, row in data.iterrows():
             speciality = row["speciality"]
             text = row["text"].lower()
-            tokens = word_tokenize(text)
+            tokens = word_tokenize_safe(text)
             n_grams = list(ngrams(tokens, self.n, pad_left=True, pad_right=True, left_pad_symbol="<s>", right_pad_symbol="</s>"))
             for gram in n_grams:
                 prefix = gram[:-1]
@@ -36,7 +40,7 @@ class NGramModel:
                 self.models[speciality][prefix][next_word] += 1
 
     def predict(self, speciality, prefix, top_k=3):
-        prefix_tuple = tuple(word_tokenize(prefix.lower()))[-(self.n - 1):]
+        prefix_tuple = tuple(word_tokenize_safe(prefix.lower()))[-(self.n - 1):]
         predictions = self.models[speciality].get(prefix_tuple, {})
         sorted_predictions = sorted(predictions.items(), key=lambda x: x[1], reverse=True)
         return [word for word, _ in sorted_predictions[:top_k]]
