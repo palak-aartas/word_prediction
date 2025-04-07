@@ -34,3 +34,4 @@ class NGramModel:
 
         sorted_predictions = sorted(predictions.items(), key=lambda x: x[1], reverse=True)
         return [word for word, _ in sorted_predictions[:top_k]]
+
