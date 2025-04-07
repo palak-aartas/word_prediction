@@ -5,7 +5,8 @@ from collections import defaultdict
 from nltk.util import ngrams
 from nltk.tokenize import word_tokenize
 
-nltk.download("punkt")
+nltk.data.path.append("./nltk_data")
+
 
 class NGramModel:
     def __init__(self, n=2):
