@@ -1,3 +1,5 @@
+# ngram_model.py
+
 import nltk
 from collections import defaultdict
 from nltk.util import ngrams
@@ -22,7 +24,6 @@ class NGramModel:
             text = row["text"].lower()
             tokens = word_tokenize(text)
             n_grams = list(ngrams(tokens, self.n, pad_left=True, pad_right=True, left_pad_symbol="<s>", right_pad_symbol="</s>"))
-
             for gram in n_grams:
                 prefix = gram[:-1]
                 next_word = gram[-1]
@@ -31,7 +32,5 @@ class NGramModel:
     def predict(self, speciality, prefix, top_k=3):
         prefix_tuple = tuple(word_tokenize(prefix.lower()))[-(self.n - 1):]
         predictions = self.models[speciality].get(prefix_tuple, {})
-
         sorted_predictions = sorted(predictions.items(), key=lambda x: x[1], reverse=True)
         return [word for word, _ in sorted_predictions[:top_k]]
-

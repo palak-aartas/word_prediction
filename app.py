@@ -1,34 +1,37 @@
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
 import pickle
-from ngram_model import NGramModel
+import os
 
 app = Flask(__name__, template_folder="templates")
 CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:5000"])
 
-# Load models
+# ✅ Load NGramModel
 with open("ngram_model.pkl", "rb") as f:
     ngram_model = pickle.load(f)
 
+# ✅ Load Bigram Model
 with open("bigram_model.pkl", "rb") as f:
     bigram_model = pickle.load(f)
 
+# ✅ Load Trigram Model
 with open("trigram_model.pkl", "rb") as f:
     trigram_model = pickle.load(f)
 
-# Speciality list
-SPECIALITIES = sorted([str(k) for k in ngram_model.models.keys() if isinstance(k, str)])
+# ✅ Extract speciality list
+SPECIALITIES = sorted([str(k) for k in ngram_model.models.keys()])
 
+# ✅ Suggestion logic
 def generate_suggestions(speciality, input_text):
     suggestions = set()
 
-    # Try new NGramModel first
+    # Primary NGramModel
     new_model_suggestions = ngram_model.predict(speciality, input_text, top_k=5)
     if new_model_suggestions:
         return new_model_suggestions
 
-    # Fallback to older models
-    words = input_text.split()
+    # Fallback
+    words = input_text.lower().split()
 
     if len(words) >= 2:
         trigram_key = (words[-2], words[-1])
