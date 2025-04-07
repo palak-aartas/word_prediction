@@ -3,7 +3,7 @@ from flask_cors import CORS
 import pickle
 import os
 import nltk
-nltk.data.path.append("./nltk_data")
+nltk.data.path.append('./nltk_data')
 
 app = Flask(__name__, template_folder="templates")
 CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:5000"])
