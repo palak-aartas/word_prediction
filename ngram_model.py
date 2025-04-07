@@ -1,11 +1,16 @@
 # ngram_model.py
 
-import nltk
 from collections import defaultdict
 from nltk.util import ngrams
 from nltk.tokenize import word_tokenize
 
-nltk.data.path.append("./nltk_data")
+import os
+import nltk
+
+project_root = os.path.dirname(os.path.abspath(__file__))
+nltk_path = os.path.join(project_root, "nltk_data")
+nltk.data.path.append(nltk_path)
+
 
 
 class NGramModel:

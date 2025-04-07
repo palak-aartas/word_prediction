@@ -3,36 +3,32 @@ from flask_cors import CORS
 import pickle
 import os
 import nltk
-nltk.data.path.append('./nltk_data')
+
+project_root = os.path.dirname(os.path.abspath(__file__))
+nltk_path = os.path.join(project_root, "nltk_data")
+nltk.data.path.append(nltk_path)
 
 app = Flask(__name__, template_folder="templates")
 CORS(app, origins=["http://localhost:3000", "http://127.0.0.1:5000"])
 
-# ✅ Load NGramModel
 with open("ngram_model.pkl", "rb") as f:
     ngram_model = pickle.load(f)
 
-# ✅ Load Bigram Model
 with open("bigram_model.pkl", "rb") as f:
     bigram_model = pickle.load(f)
 
-# ✅ Load Trigram Model
 with open("trigram_model.pkl", "rb") as f:
     trigram_model = pickle.load(f)
 
-# ✅ Extract speciality list
 SPECIALITIES = sorted([str(k) for k in ngram_model.models.keys()])
 
-# ✅ Suggestion logic
 def generate_suggestions(speciality, input_text):
     suggestions = set()
 
-    # Primary NGramModel
     new_model_suggestions = ngram_model.predict(speciality, input_text, top_k=5)
     if new_model_suggestions:
         return new_model_suggestions
 
-    # Fallback
     words = input_text.lower().split()
 
     if len(words) >= 2:
